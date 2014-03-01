@@ -40,12 +40,12 @@ aws ${cli_profile} ec2 create-route --route-table-id ${rtb_id} --destination-cid
 #
 # Create Security Group
 #
-security-group_ID=`aws ${cli_profile} ec2 create-security-group --group-name ${group_name} --description "${group_name}" --vpc-id ${vpc_id} | jq -r '.GroupId'`
-echo "security-group_ID"
+security_group_ID=`aws ${cli_profile} ec2 create-security-group --group-name ${group_name} --description "${group_name}" --vpc-id ${vpc_id} | jq -r '.GroupId'`
+echo "security_group_ID"
 #
 # Set Security Inbound Traffic
 #
-aws ${cli_profile} ec2 authorize-security-group-ingress --group-id ${security-group_ID} --protocol tcp --port ${security_group_ssh_port} --cidr ${security_group_source_ip}
+aws ${cli_profile} ec2 authorize-security-group-ingress --group-id ${security_group_ID} --protocol tcp --port ${security_group_ssh_port} --cidr ${security_group_source_ip}
 #
 # Create EC2 instance and Confirm Public IP address
 #
