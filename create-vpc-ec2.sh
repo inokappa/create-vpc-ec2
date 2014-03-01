@@ -54,7 +54,7 @@ instance_ID=`aws ${cli_profile} ec2 run-instances \
 --count 1 \
 --instance-type t1.micro \
 --key-name ${keyname} \
---security-group-ids ${security-group_ID} \
+--security-group-ids ${security_group_ID} \
 --subnet-id ${subnet_ID} \
 --associate-public-ip-address | jq -c -r '.Instances[]|.InstanceId'`
 publicIpAddress=`aws ${cli_profile} ec2 describe-instances | jq -r '.Reservations[].Instances[]|select(.InstanceId=="${instance_ID}").PublicIpAddress'`
