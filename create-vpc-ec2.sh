@@ -12,12 +12,12 @@ security_group_source_ip=""
 #
 # Create VPC
 #
-vpc_id=`aws ${cli_profile} ec2 create-vpc --cidr-block ${vpc_cidr} | jq -r .Vpc.VpcId`
+vpc_id=`aws ${cli_profile} ec2 create-vpc --cidr-block ${vpc_cidr} | jq -r '.Vpc.VpcId'`
 echo "${vpc_id}"
 #
 # Create VPC Subnet
 #
-subnet_ID=`aws ${cli_profile} ec2 create-subnet --vpc-id ${vpc_id} --cidr-block ${subnet_cidr} | jq .Subnet.SubnetId`
+subnet_ID=`aws ${cli_profile} ec2 create-subnet --vpc-id ${vpc_id} --cidr-block ${subnet_cidr} | jq -r '.Subnet.SubnetId'`
 echo "${subnet_ID}"
 #
 # Create Internet Gateway
@@ -41,7 +41,7 @@ aws ${cli_profile} ec2 create-route --route-table-id ${rtb_id} --destination-cid
 # Create Security Group
 #
 security_group_ID=`aws ${cli_profile} ec2 create-security-group --group-name ${group_name} --description "${group_name}" --vpc-id ${vpc_id} | jq -r '.GroupId'`
-echo "security_group_ID"
+echo "${security_group_ID}"
 #
 # Set Security Inbound Traffic
 #
@@ -49,6 +49,7 @@ aws ${cli_profile} ec2 authorize-security-group-ingress --group-id ${security_gr
 #
 # Create EC2 instance and Confirm Public IP address
 #
+echo "Create EC2 instance..."
 instance_ID=`aws ${cli_profile} ec2 run-instances \
 --image-id ${ami_ID} \
 --count 1 \
@@ -57,6 +58,9 @@ instance_ID=`aws ${cli_profile} ec2 run-instances \
 --security-group-ids ${security_group_ID} \
 --subnet-id ${subnet_ID} \
 --associate-public-ip-address | jq -c -r '.Instances[]|.InstanceId'`
+#
+sleep 5
+echo "Checking Public IP..."
 publicIpAddress=`aws ${cli_profile} ec2 describe-instances | jq -r '.Reservations[].Instances[]|select(.InstanceId=="${instance_ID}").PublicIpAddress'`
 #
 printf "${instance_ID}\n"
